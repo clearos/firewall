@@ -492,7 +492,7 @@ int if_get_network(if_ctx *p_ctx, const char *ip, const char *netmask, char *buf
         return -1;
     }
 
-    if((in.s_addr = inet_addr(ip)) == INADDR_NONE)
+    if(inet_aton(ip, &in) < 0)
     {
         snprintf(p_ctx->last_error, MAX_ERROR_STR,
             "%s: Invalid IP address: %s", __func__, ip);
@@ -504,7 +504,7 @@ int if_get_network(if_ctx *p_ctx, const char *ip, const char *netmask, char *buf
     ip_quad[2] = (in.s_addr & 0xffff00ff) >> 16;
     ip_quad[3] = (in.s_addr & 0xffffff00) >> 24;
 
-    if((in.s_addr = inet_addr(netmask)) == INADDR_NONE)
+    if(inet_aton(netmask, &in) < 0)
     {
         snprintf(p_ctx->last_error, MAX_ERROR_STR,
             "%s: Invalid netmask: %s", __func__, netmask);
@@ -543,7 +543,7 @@ int if_get_prefix(if_ctx *p_ctx, const char *netmask, char *buffer, size_t size)
         return -1;
     }
 
-    if((in.s_addr = inet_addr(netmask)) == INADDR_NONE)
+    if(inet_aton(netmask, &in) < 0)
     {
         snprintf(p_ctx->last_error, MAX_ERROR_STR,
             "%s: Invalid netmask: %s", __func__, netmask);

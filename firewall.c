@@ -696,8 +696,7 @@ static int __lua_if_exists(lua_State *L)
     int rc;
     const char *ifn = luaL_checkstring(L, 1);
 
-    if((rc = if_exists(IFC, ifn)) == -1)
-        return eprintf(IFC->last_error);
+    rc = if_exists(IFC, ifn);
 
     lua_pushboolean(L, (rc == 0) ? 1 : 0);
 

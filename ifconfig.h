@@ -143,4 +143,4 @@ int if_get_speed(if_ctx *p_ctx, const char *device, unsigned short *speed);
 
 #endif // IFCONFIG_H
 
-// vi: ts=4
+// vi: expandtab shiftwidth=4 softtabstop=4 tabstop=4

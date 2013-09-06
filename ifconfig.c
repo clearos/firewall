@@ -928,4 +928,4 @@ int main(int argc, char *argv[])
 
 #endif
 
-// vi: ts=4
+// vi: expandtab shiftwidth=4 softtabstop=4 tabstop=4

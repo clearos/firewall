@@ -1114,16 +1114,18 @@ int main(int argc, char *argv[])
     if(luaL_loadfile(LUA, (source = argv[optind])) || lua_pcall(LUA, 0, 0, 0))
     {
         syslog(LOG_ERR, "Error: %s", lua_tostring(LUA, -1));
-        return 1;
+        grc = 1;
     }
-
-    gettimeofday(&tvb, NULL); 
-
-    if(!pretend)
+    else
     {
-        seconds = tvb.tv_sec - tva.tv_sec;
-        seconds += (tvb.tv_usec - tva.tv_usec) / 1000000.0f;
-        syslog(LOG_INFO, "Execution time: %.03fs", seconds);
+        gettimeofday(&tvb, NULL); 
+
+        if(!pretend)
+        {
+            seconds = tvb.tv_sec - tva.tv_sec;
+            seconds += (tvb.tv_usec - tva.tv_usec) / 1000000.0f;
+            syslog(LOG_INFO, "Execution time: %.03fs", seconds);
+        }
     }
 
     closelog();
@@ -1131,4 +1133,4 @@ int main(int argc, char *argv[])
     return grc;
 }
 
-// vi: ts=4
+// vi: expandtab shiftwidth=4 softtabstop=4 tabstop=4

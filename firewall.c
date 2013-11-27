@@ -41,6 +41,7 @@
 #include <errno.h>
 #include <syslog.h>
 #include <signal.h>
+#include <dirent.h>
 
 #ifndef FIREWALL_IPV6
 #include <iptables.h>
@@ -412,6 +413,56 @@ static int __lua_execute(lua_State *L)
 
     lua_pushnumber(L, rc);
     return 1;
+}
+
+// Forward declaration for the directory iterator function
+static int __lua_dir_iter(lua_State *L);
+    
+static int __lua_dir(lua_State *L)
+{
+    const char *path = luaL_checkstring(L, 1);
+    
+    // Create a userdatum to store a DIR address
+    DIR **d = (DIR **)lua_newuserdata(L, sizeof(DIR *));
+    
+    // Set its metatable
+    luaL_getmetatable(L, "LuaBook.dir");
+    lua_setmetatable(L, -2);
+    
+    // Try to open the given directory
+    *d = opendir(path);
+    if (*d == NULL)
+        luaL_error(L, "Cannot open directory %s: %s", path, strerror(errno));
+    
+    // Creates and returns the iterator function
+    // (its sole upvalue, the directory userdatum,
+    // is already on the stack top.
+    lua_pushcclosure(L, __lua_dir_iter, 1);
+
+    return 1;
+}
+
+static int __lua_dir_iter(lua_State *L)
+{
+    DIR *d = *(DIR **)lua_touserdata(L, lua_upvalueindex(1));
+    struct dirent *entry;
+
+    if ((entry = readdir(d)) != NULL) {
+        lua_pushstring(L, entry->d_name);
+        return 1;
+    }
+
+    // No more values to return
+    return 0;
+}
+
+static int __lua_dir_gc(lua_State *L)
+{
+    DIR *d = *(DIR **)lua_touserdata(L, 1);
+
+    if (d) closedir(d);
+
+    return 0;
 }
 
 // Initialize built-in iptable tables (filter, mangle, nat).
@@ -1018,6 +1069,16 @@ int main(int argc, char *argv[])
 
     lua_pushcfunction(LUA, __lua_execute);
     lua_setglobal(LUA, "execute");
+
+    // Directory iterator
+    luaL_newmetatable(LUA, "LuaBook.dir");
+    
+    lua_pushstring(LUA, "__gc");
+    lua_pushcfunction(LUA, __lua_dir_gc);
+    lua_settable(LUA, -3);
+    
+    lua_pushcfunction(LUA, __lua_dir);
+    lua_setglobal(LUA, "dir");
 
     // Iptables bindings
     lua_pushcfunction(LUA, __lua_iptc_init);

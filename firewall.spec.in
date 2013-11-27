@@ -1,7 +1,7 @@
 Name: @PACKAGE_NAME@
 Summary: ClearOS Firewall Engine
 Version: @PACKAGE_VERSION@
-Release: 20%{?dist}
+Release: 21%{?dist}
 Vendor: ClearFoundation
 Source: firewall-%{version}.tar.gz
 Group: System Environment/Base
@@ -60,6 +60,9 @@ rm -rf %{buildroot}
 /sbin/app-firewall6
 
 %changelog
+* Wed Nov 17 2013 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-21
+- added a directory iterator function for LUA.
+
 * Sun Jun 24 2011 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-2
 - extracted only what is needed from iptables, wrote a new configure script, and now linking to lua shared.  Thanks to Shad Lords for all his help!
 

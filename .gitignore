@@ -1,0 +1,13 @@
+/.deps/
+/Makefile
+/autom4te.cache/
+/config.h
+/config.h.in~
+/config.log
+/config.status
+/firewall
+/*.o
+/firewall6
+/libtool
+/stamp-h1
+

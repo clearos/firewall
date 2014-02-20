@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([firewall], [1.4.7], [http://www.clearfoundation.com/docs/developer/bug_tracker/])
-AM_INIT_AUTOMAKE([firewall], [1.4.7])
+AC_INIT([firewall], [1.4.19.1], [http://www.clearfoundation.com/docs/developer/bug_tracker/])
+AM_INIT_AUTOMAKE([firewall], [1.4.19.1])
 AC_CONFIG_SRCDIR([firewall.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])

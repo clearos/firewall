@@ -45,6 +45,7 @@
 
 #ifndef FIREWALL_IPV6
 #include <iptables.h>
+#define do_command do_command4
 #define FIREWALL_NFPROTO NFPROTO_IPV4
 #else
 #include <ip6tables.h>

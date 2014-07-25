@@ -13,6 +13,9 @@ BuildRequires: kernel-headers
 BuildRequires: lua-devel
 BuildRequires: iptables-devel
 BuildRequires: iptables-ipv6
+BuildRequires: autoconf >= 2.63
+BuildRequires: automake
+BuildRequires: libtool
 Conflicts: kernel < 2.4.20
 Requires: iptables = %{version}
 
@@ -30,11 +33,11 @@ The ClearOS Firewall Engine with IPv6 support.  This is a customized version of 
 
 %prep
 %setup -q
-
-%build
+./autogen.sh
 CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" \
 ./configure --bindir=/bin --sbindir=/sbin --sysconfdir=/etc --libdir=/%{_lib} --libexecdir=/%{_lib} --mandir=%{_mandir} --includedir=%{_includedir}
 
+%build
 # do not use rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool

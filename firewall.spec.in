@@ -1,7 +1,7 @@
 Name: @PACKAGE_NAME@
 Summary: ClearOS Firewall Engine
 Version: @PACKAGE_VERSION@
-Release: 21%{?dist}
+Release: 1%{?dist}
 Vendor: ClearFoundation
 Source: firewall-%{version}.tar.gz
 Group: System Environment/Base
@@ -11,8 +11,7 @@ License: GPLv2
 BuildRequires: libselinux-devel
 BuildRequires: kernel-headers
 BuildRequires: lua-devel
-BuildRequires: iptables-devel
-BuildRequires: iptables-ipv6
+BuildRequires: iptables-devel = %{version}
 BuildRequires: autoconf >= 2.63
 BuildRequires: automake
 BuildRequires: libtool
@@ -21,15 +20,6 @@ Requires: iptables = %{version}
 
 %description
 The ClearOS Firewall Engine.  This is a customized version of iptables combined with the LUA interpreter.
-
-%package ipv6
-Summary: IPv6 support for the ClearOS Firewall Engine
-Group: System Environment/Base
-Requires: %{name} = %{version}-%{release}
-Requires: iptables-ipv6 = %{version}
-
-%description ipv6
-The ClearOS Firewall Engine with IPv6 support.  This is a customized version of iptables combined with the LUA interpreter.
 
 %prep
 %setup -q
@@ -57,12 +47,12 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 /sbin/app-firewall
-
-%files ipv6
-%defattr(-,root,root)
 /sbin/app-firewall6
 
 %changelog
+* Tue Aug 12 2015 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.21-v7-1
+- Combined ipv4 and ipv6 in to one package.  Updated to iptables v1.4.21.
+
 * Thu Mar 13 2014 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-22
 - Added missing ip6tables-multi.h to EXTRA_DIST.
 

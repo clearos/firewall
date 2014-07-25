@@ -636,7 +636,7 @@ static int __lua_iptables(lua_State *L)
     rule_copy = strdup(rule);
     argv_parse(table, rule_copy);
 
-    r = do_command(iptc_argc, iptc_argv, &iptc_argv[2], &tables[i].handle);
+    r = do_command(iptc_argc, iptc_argv, &iptc_argv[2], &tables[i].handle, false);
     if(!r) return eprintf("iptables -t %s %s", table, rule);
 
     argv_free();

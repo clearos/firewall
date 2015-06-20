@@ -1,0 +1,66 @@
+Name: firewall
+Summary: ClearOS Firewall Engine
+Version: 1.4.21
+Release: 1%{?dist}
+Vendor: ClearFoundation
+Source: firewall-%{version}.tar.gz
+Group: System Environment/Base
+URL: http://www.clearfoundation.com/
+BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+License: GPLv2
+BuildRequires: libselinux-devel
+BuildRequires: kernel-headers
+BuildRequires: lua-devel
+BuildRequires: iptables-devel = %{version}
+BuildRequires: autoconf >= 2.63
+BuildRequires: automake
+BuildRequires: libtool
+Conflicts: kernel < 2.4.20
+Requires: iptables = %{version}
+
+%description
+The ClearOS Firewall Engine.  This is a customized version of iptables combined with the LUA interpreter.
+
+%prep
+%setup -q
+./autogen.sh
+CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" \
+./configure --bindir=/bin --sbindir=/sbin --sysconfdir=/etc --libdir=/%{_lib} --libexecdir=/%{_lib} --mandir=%{_mandir} --includedir=%{_includedir}
+
+%build
+# do not use rpath
+sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
+make
+
+%install
+rm -rf %{buildroot}
+
+make install DESTDIR=%{buildroot} 
+mv %{buildroot}/sbin/firewall  %{buildroot}/sbin/app-firewall
+mv %{buildroot}/sbin/firewall6  %{buildroot}/sbin/app-firewall6
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root)
+/sbin/app-firewall
+/sbin/app-firewall6
+
+%changelog
+* Tue Aug 12 2015 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.21-v7-1
+- Combined ipv4 and ipv6 in to one package.  Updated to iptables v1.4.21.
+
+* Thu Mar 13 2014 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-22
+- Added missing ip6tables-multi.h to EXTRA_DIST.
+
+* Sun Nov 17 2013 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-21
+- added a directory iterator function for LUA.
+
+* Fri Jun 24 2011 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-2
+- extracted only what is needed from iptables, wrote a new configure script, and now linking to lua shared.  Thanks to Shad Lords for all his help!
+
+* Sun Jun 12 2011 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-1
+- patched with ClearOS firewall

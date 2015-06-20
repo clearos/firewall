@@ -12,7 +12,6 @@
 /.deps/
 /firewall
 /firewall6
-/firewall.spec
 /install-sh
 /libtool
 /ltmain.sh

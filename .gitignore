@@ -21,3 +21,6 @@
 /missing
 /*.o
 /stamp-h1
+/Makefile
+*.src.rpm
+*.tar.gz

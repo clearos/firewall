@@ -1,7 +1,7 @@
 Name: firewall
 Summary: ClearOS Firewall Engine
 Version: 1.4.21
-Release: 1%{?dist}
+Release: 3%{?dist}
 Vendor: ClearFoundation
 Source: firewall-%{version}.tar.gz
 Group: System Environment/Base
@@ -50,6 +50,9 @@ rm -rf %{buildroot}
 /sbin/app-firewall6
 
 %changelog
+
+* Tue Mar 22 2016 Darryl Sokoloski <dsokoloski@clearfoundation.com> - HEAD:UNRELEASED
+- Updated changelog. : Commit 0c6f14c
 
 * Tue Mar 22 2016 Darryl Sokoloski <dsokoloski@clearfoundation.com> - v1.4.21-3
 - Removed changelog, updating dynamically from Git. : Commit 0bf12d3

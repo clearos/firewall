@@ -1,10 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// main.c
-// cc-firewall implementation.
+// ClearOS Firewall Engine
 // Copyright (C) 2005-2008 Point Clark Networks
-// Copyright (C) 2009-2011 ClearFoundation
-// $Id: $
+// Copyright (C) 2009-2016 ClearFoundation
 //
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -721,24 +719,6 @@ static int __lua_iptc_delete_user_chains(lua_State *L)
 
     free(chains);
 
-// XXX: Nope!  Must copy chain names (as above, from iptables.c).
-#if 0
-    chain = iptc_first_chain(tables[i].handle);
-
-    while(chain)
-    {
-        fprintf(stderr, "chain \"%s\", [%d]0x%08x\n", chain, i, tables[i].handle);
-
-        if(!iptc_builtin(chain, tables[i].handle))
-        {
-            fprintf(stderr, "iptc_delete_chain: %d\n",
-                iptc_delete_chain(chain, tables[i].handle));
-        }
-
-        chain = iptc_next_chain(tables[i].handle);
-    }
-#endif
-
     return 0;
 }
 
@@ -955,7 +935,7 @@ static void exit_handler(void)
 
 }
 
-// cc-firewall command line arguments.
+// Command line arguments.
 static struct option options[] =
 {
     { "help", 0, 0, 'h' },
@@ -966,14 +946,18 @@ static struct option options[] =
     { 0 }
 };
 
-// cc-firewall; fire it up!
+// Fire it up!
 int main(int argc, char *argv[])
 {
     int c;
     float seconds;
     struct timeval tva, tvb;
 
+#ifndef FIREWALL_IPV6
     iptables_globals.program_name = "firewall";
+#else
+    iptables_globals.program_name = "firewall6";
+#endif
     if (xtables_init_all(&iptables_globals, FIREWALL_NFPROTO) < 0) {
         fprintf(stderr, "%s: Failed to initialize xtables\n", argv[0]);
         exit(1);

@@ -1,7 +1,7 @@
 Name: @PACKAGE_NAME@
 Summary: ClearOS Firewall Engine
 Version: @PACKAGE_VERSION@
-Release: 2%{?dist}
+Release: 3%{?dist}
 Vendor: ClearFoundation
 Source: firewall-%{version}.tar.gz
 Group: System Environment/Base
@@ -50,17 +50,3 @@ rm -rf %{buildroot}
 /sbin/app-firewall6
 
 %changelog
-* Tue Aug 12 2015 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.21-v7-1
-- Combined ipv4 and ipv6 in to one package.  Updated to iptables v1.4.21.
-
-* Thu Mar 13 2014 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-22
-- Added missing ip6tables-multi.h to EXTRA_DIST.
-
-* Sun Nov 17 2013 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-21
-- added a directory iterator function for LUA.
-
-* Fri Jun 24 2011 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-2
-- extracted only what is needed from iptables, wrote a new configure script, and now linking to lua shared.  Thanks to Shad Lords for all his help!
-
-* Sun Jun 12 2011 Darryl Sokoloski <dsokoloski@clearfoundation.com> 1.4.7-v6-1
-- patched with ClearOS firewall

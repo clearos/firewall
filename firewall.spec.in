@@ -1,7 +1,7 @@
 Name: @PACKAGE_NAME@
 Summary: ClearOS Firewall Engine
 Version: @PACKAGE_VERSION@
-Release: 3%{?dist}
+Release: 4%{?dist}
 Vendor: ClearFoundation
 Source: firewall-%{version}.tar.gz
 Group: System Environment/Base
@@ -15,12 +15,17 @@ BuildRequires: iptables-devel = %{version}
 BuildRequires: autoconf >= 2.63
 BuildRequires: automake
 BuildRequires: libtool
+BuildRequires: systemd
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
 Conflicts: kernel < 2.4.20
 Requires: iptables = %{version}
 
 %description
 The ClearOS Firewall Engine.  This is a customized version of iptables combined with the LUA interpreter.
 
+# Prepare
 %prep
 %setup -q
 ./autogen.sh
@@ -34,20 +39,41 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 make
 
+# Install
 %install
 rm -rf %{buildroot}
 
 make install DESTDIR=%{buildroot} 
 mv %{buildroot}/sbin/firewall  %{buildroot}/sbin/app-firewall
 mv %{buildroot}/sbin/firewall6  %{buildroot}/sbin/app-firewall6
+install -D -m 644 deploy/%{name}.service %{buildroot}/lib/systemd/system/%{name}.service
+install -D -m 0755 deploy/exec-start.sh %{buildroot}/%{_libexecdir}/%{name}/exec-start.sh
+install -D -m 0755 deploy/exec-stop.sh %{buildroot}/%{_libexecdir}/%{name}/exec-stop.sh
+install -D -m 0755 deploy/functions.sh %{buildroot}/%{_libexecdir}/%{name}/functions.sh
 
+# Clean-up
 %clean
 rm -rf %{buildroot}
 
+# Post install
+%post
+%systemd_post %{name}.service
+
+# Pre uninstall
+%preun
+%systemd_preun %{name}.service
+
+# Post uninstall
+%postun
+%systemd_postun_with_restart %{name}.service
+
+# Files
 %files
 %defattr(-,root,root)
 /sbin/app-firewall
 /sbin/app-firewall6
+%attr(755,root,root) %{_libexecdir}/%{name}/
+%attr(755,root,root) /lib/systemd/system
 
 %changelog
 

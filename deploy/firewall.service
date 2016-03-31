@@ -1,0 +1,14 @@
+[Unit]
+Description=ClearOS Firewall Engine
+Conflicts=firewalld.service
+Conflicts=iptables.service
+Conflicts=ip6tables.service
+Before=network.target
+Before=fail2ban.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/firewall/exec-start.sh
+ExecStop=/usr/libexec/firewall/exec-stop.sh
+

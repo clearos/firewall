@@ -1,7 +1,7 @@
 Name: firewall
 Summary: ClearOS Firewall Engine
 Version: 1.4.21
-Release: 4%{?dist}
+Release: 5%{?dist}
 Vendor: ClearFoundation
 Source: firewall-%{version}.tar.gz
 Group: System Environment/Base
@@ -16,9 +16,7 @@ BuildRequires: autoconf >= 2.63
 BuildRequires: automake
 BuildRequires: libtool
 BuildRequires: systemd
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
+%{?systemd_requires}
 Conflicts: kernel < 2.4.20
 Requires: iptables = %{version}
 
@@ -46,7 +44,7 @@ rm -rf %{buildroot}
 make install DESTDIR=%{buildroot} 
 mv %{buildroot}/sbin/firewall  %{buildroot}/sbin/app-firewall
 mv %{buildroot}/sbin/firewall6  %{buildroot}/sbin/app-firewall6
-install -D -m 644 deploy/%{name}.service %{buildroot}/lib/systemd/system/%{name}.service
+install -D -m 0644 deploy/%{name}.service %{buildroot}/%{_unitdir}/%{name}.service
 install -D -m 0755 deploy/exec-start.sh %{buildroot}/%{_libexecdir}/%{name}/exec-start.sh
 install -D -m 0755 deploy/exec-stop.sh %{buildroot}/%{_libexecdir}/%{name}/exec-stop.sh
 install -D -m 0755 deploy/functions.sh %{buildroot}/%{_libexecdir}/%{name}/functions.sh
@@ -72,8 +70,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 /sbin/app-firewall
 /sbin/app-firewall6
-%attr(755,root,root) %{_libexecdir}/%{name}/
-%attr(755,root,root) /lib/systemd/system
+%attr(0755,root,root) %{_libexecdir}/%{name}/
+%attr(0644,root,root) %{_unitdir}/%{name}.service
 
 %changelog
 

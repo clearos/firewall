@@ -12,3 +12,5 @@ RemainAfterExit=yes
 ExecStart=/usr/libexec/firewall/exec-start.sh
 ExecStop=/usr/libexec/firewall/exec-stop.sh
 
+[Install]
+WantedBy=multi-user.target

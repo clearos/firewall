@@ -76,6 +76,9 @@ static int debug = 0;
 static int pretend = 0;
 static int strict = 0;
 
+// Number of seconds to wait for a successful commit
+static int commit_timeout = -1;
+
 // Global return code, set by eprintf()
 static int grc = 0;
 
@@ -589,6 +592,7 @@ static int __lua_iptc_flush_all_chains(lua_State *L)
 static int __lua_iptc_commit(lua_State *L)
 {
     int i, r;
+    int t = commit_timeout;
     const char *table = luaL_checkstring(L, 1);
 
     i = find_table(table);
@@ -601,7 +605,13 @@ static int __lua_iptc_commit(lua_State *L)
 
     if(pretend) return 0;
 
-    r = iptc_commit(tables[i].handle);
+    do {
+        if ((r = iptc_commit(tables[i].handle))) break;
+        if (errno != EAGAIN || commit_timeout < 0) break;
+        t--;
+        sleep(1);
+    } while (commit_timeout == 0 || t > 0);
+
     tables[i].handle = NULL;
 
     if(!r)
@@ -943,6 +953,7 @@ static struct option options[] =
     { "debug", 0, 0, 'd'},
     { "pretend", 0, 0, 'p'},
     { "strict", 0, 0, 's'},
+    { "wait", 1, 0, 'w'},
     { 0 }
 };
 
@@ -966,7 +977,7 @@ int main(int argc, char *argv[])
     init_extensions();
 #endif
     // Command-line processing
-    while((c = getopt_long(argc, argv, "hVdps", options, NULL)) != -1)
+    while((c = getopt_long(argc, argv, "hVdpsw:", options, NULL)) != -1)
     {
         switch(c)
         {
@@ -979,6 +990,10 @@ int main(int argc, char *argv[])
         case 's':
             strict = 1;
             break;
+        case 'w':
+            commit_timeout = atoi(optarg);
+            break;
+
         case 'V':
             fprintf(stderr, "%s v%s\n",
                 iptables_globals.program_name, iptables_globals.program_version);
@@ -989,7 +1004,7 @@ int main(int argc, char *argv[])
         default:
             fprintf(stderr, "%s [-h|--help]\n", argv[0]);
             fprintf(stderr, "%s [-V|--version]\n", argv[0]);
-            fprintf(stderr, "%s [-s|--strict] [-d|--debug] [-p|--pretend] <configuration>\n", argv[0]);
+            fprintf(stderr, "%s [-s|--strict] [-d|--debug] [-p|--pretend] [-w|--wait <s>] <configuration>\n", argv[0]);
             exit(1);
         }
     }

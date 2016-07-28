@@ -639,13 +639,25 @@ static int __lua_iptables(lua_State *L)
     if(!tables[i].handle)
         return eprintf("Invalid table: %s", table);
 
-    if(debug) syslog(LOG_DEBUG, "iptables -t %s %s", table, rule);
+    if(debug) {
+#ifndef FIREWALL_IPV6
+        syslog(LOG_DEBUG, "iptables -t %s %s", table, rule);
+#else
+        syslog(LOG_DEBUG, "ip6tables -t %s %s", table, rule);
+#endif
+    }
 
     rule_copy = strdup(rule);
     argv_parse(table, rule_copy);
 
     r = do_command(iptc_argc, iptc_argv, &iptc_argv[2], &tables[i].handle, false);
-    if(!r) return eprintf("iptables -t %s %s", table, rule);
+    if(!r) {
+#ifndef FIREWALL_IPV6
+        return eprintf("iptables -t %s %s", table, rule);
+#else
+        return eprintf("ip6tables -t %s %s", table, rule);
+#endif
+    }
 
     argv_free();
     free(rule_copy);

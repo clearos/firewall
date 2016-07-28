@@ -1,7 +1,7 @@
 Name: firewall
 Summary: ClearOS Firewall Engine
 Version: 1.4.21
-Release: 8%{?dist}
+Release: 9%{?dist}
 Vendor: ClearFoundation
 Source: firewall-%{version}.tar.gz
 Group: System Environment/Base

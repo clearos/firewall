@@ -77,7 +77,7 @@ static int pretend = 0;
 static int strict = 0;
 
 // Number of seconds to wait for a successful commit
-static int commit_timeout = -1;
+static int wait_timeout = 0;
 
 // Global return code, set by eprintf()
 static int grc = 0;
@@ -472,6 +472,9 @@ static int __lua_iptc_init(lua_State *L)
 {
     int i;
 
+    if(!xtables_lock(wait_timeout))
+        return eprintf("Unable to acquire xtables lock.");
+
     if(!tables)
     {
         tables = calloc(4, sizeof(struct table_t));
@@ -592,7 +595,6 @@ static int __lua_iptc_flush_all_chains(lua_State *L)
 static int __lua_iptc_commit(lua_State *L)
 {
     int i, r;
-    int t = commit_timeout;
     const char *table = luaL_checkstring(L, 1);
 
     i = find_table(table);
@@ -605,12 +607,7 @@ static int __lua_iptc_commit(lua_State *L)
 
     if(pretend) return 0;
 
-    do {
-        if ((r = iptc_commit(tables[i].handle))) break;
-        if (errno != EAGAIN || commit_timeout < 0) break;
-        t--;
-        sleep(1);
-    } while (commit_timeout == 0 || t > 0);
+    r = iptc_commit(tables[i].handle);
 
     tables[i].handle = NULL;
 
@@ -965,7 +962,7 @@ static struct option options[] =
     { "debug", 0, 0, 'd'},
     { "pretend", 0, 0, 'p'},
     { "strict", 0, 0, 's'},
-    { "wait", 1, 0, 'w'},
+    { "wait", 2, 0, 'w'},
     { 0 }
 };
 
@@ -1003,9 +1000,10 @@ int main(int argc, char *argv[])
             strict = 1;
             break;
         case 'w':
-            commit_timeout = atoi(optarg);
+            wait_timeout = -1;
+            if (optarg)
+                wait_timeout = atoi(optarg);
             break;
-
         case 'V':
             fprintf(stderr, "%s v%s\n",
                 iptables_globals.program_name, iptables_globals.program_version);
